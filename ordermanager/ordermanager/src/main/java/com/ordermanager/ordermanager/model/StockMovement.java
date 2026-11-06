@@ -14,17 +14,22 @@ public class StockMovement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "creation_date", nullable = false, updatable = false)
     private LocalDateTime creationDate;
 
-    @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Item item;
 
+    @Column(nullable = false)
     private int quantity;
 
-    @ManyToMany(mappedBy = "stockMovements")
-    @JsonIgnoreProperties("stockMovements")
-    private List<Order> orders = new ArrayList<>();
+    private String type;
+
+    @OneToMany(mappedBy = "stockMovement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("stockMovement")
+    private List<OrderAllocation> allocations = new ArrayList<>();
 
     public StockMovement() {
         this.creationDate = LocalDateTime.now();
@@ -36,43 +41,21 @@ public class StockMovement {
         this.quantity = quantity;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public LocalDateTime getCreationDate() { return creationDate; }
+    public void setCreationDate(LocalDateTime creationDate) { this.creationDate = creationDate; }
 
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
+    public Item getItem() { return item; }
+    public void setItem(Item item) { this.item = item; }
 
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
 
-    public Item getItem() {
-        return item;
-    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
-    public void setItem(Item item) {
-        this.item = item;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
+    public List<OrderAllocation> getAllocations() { return allocations; }
+    public void setAllocations(List<OrderAllocation> allocations) { this.allocations = allocations; }
 }

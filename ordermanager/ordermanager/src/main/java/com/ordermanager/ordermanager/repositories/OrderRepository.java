@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order,Long> {
-
-    List<Order> findByItemAndStatus(Item item, String status);
+public interface OrderRepository extends JpaRepository<Order, Long> {
+    List<Order> findByItemAndStatusInOrderByCreationDateAsc(Item item, List<String> status);
 }

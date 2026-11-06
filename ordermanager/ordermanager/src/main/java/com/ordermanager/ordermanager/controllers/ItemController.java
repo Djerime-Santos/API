@@ -1,15 +1,13 @@
 package com.ordermanager.ordermanager.controllers;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.ordermanager.ordermanager.dtos.StockRequestDTO;
 import com.ordermanager.ordermanager.model.Item;
-import com.ordermanager.ordermanager.repositories.ItemRepository;
 import com.ordermanager.ordermanager.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -20,23 +18,26 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-    @Autowired
-    private ItemRepository itemRepository;
-
     @GetMapping
-    public List<Item> getAllItems() {
-        return itemRepository.findAll();
+    public ResponseEntity<List<Item>> getAllItems() {
+        return ResponseEntity.ok(itemService.getAllItems());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Item> getItemById(@PathVariable Long id) {
+        return ResponseEntity.ok(itemService.getItemById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Item> createItem(@RequestBody Item item) {
+    public ResponseEntity<Item> createItem(@Valid @RequestBody Item item) {
+        Item created = itemService.saveItem(item);
         return ResponseEntity
-                .created(URI.create("/api/items/" + item.getId()))
-                .body(itemService.saveItem(item));
+                .created(URI.create("/api/items/" + created.getId()))
+                .body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody Item item) {
+    public ResponseEntity<Item> updateItem(@PathVariable Long id, @Valid @RequestBody Item item) {
         return ResponseEntity.ok(itemService.updateItem(id, item));
     }
 
@@ -47,8 +48,7 @@ public class ItemController {
     }
 
     @PostMapping("/{id}/stock")
-    public ResponseEntity<Item> addStock(@PathVariable Long id, @RequestBody StockRequestDTO request) {
+    public ResponseEntity<Item> addStock(@PathVariable Long id, @Valid @RequestBody StockRequestDTO request) {
         return ResponseEntity.ok(itemService.addStock(id, request.getQuantity()));
-
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -18,18 +19,24 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody OrderRequestDTO request) {
-        return ResponseEntity.created(URI.create("/api/orders/"))
-                .body(orderService.createOrder(
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderRequestDTO request) {
+        Order order = orderService.createOrder(
                 request.getUserId(),
                 request.getItemId(),
                 request.getQuantity()
-        ));
+        );
+        return ResponseEntity.created(URI.create("/api/orders/" + order.getId()))
+                .body(order);
     }
 
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     @DeleteMapping("/{id}")

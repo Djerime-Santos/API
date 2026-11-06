@@ -9,8 +9,18 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private Integer stockQuantity;
+
+    @Version
+    private Long version;
+
+    @Column(nullable = false)
+    private boolean active = true;
 
     public Item() {
     }
@@ -18,6 +28,14 @@ public class Item {
     public Item(String name, Integer stockQuantity) {
         this.name = name;
         this.stockQuantity = stockQuantity;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public Long getId() {
@@ -43,4 +61,8 @@ public class Item {
     public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
+
+    public Long getVersion() { return version; }
+
+    public void setVersion(Long version) { this.version = version; }
 }
